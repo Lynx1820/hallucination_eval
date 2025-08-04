@@ -39,7 +39,7 @@ pip install -r requirements.txt
 Run the complete hallucination detection pipeline:
 
 ```bash
-python core/main_evaluation.py --num-samples 50 --layers 16 --model-name google/gemma-2-2b-it
+python core/main_evaluation.py --num-samples 100 --layers [17] --model-name google/gemma-2-2b-it
 ```
 
 ### Command Line Options
@@ -56,7 +56,7 @@ python core/main_evaluation.py \
 - `--model-name`: HuggingFace model identifier (default: google/gemma-2-2b-it)
 - `--device`: Device to run on (auto, cpu, cuda)
 - `--layers`: Specific layers to extract steering vectors from
-- `--num-samples`: Number of TAT-QA samples for evaluation (default: 50)
+- `--num-samples`: Number of TAT-QA samples for evaluation and testing (default: 50)
 
 ## System Architecture
 
@@ -201,10 +201,7 @@ Results are automatically saved to `pipeline_results.json` containing:
 
 Supported models include any HuggingFace transformer:
 - `google/gemma-2-2b-it` (default, lightweight)
-- `meta-llama/Llama-3.1-8B-Instruct` (higher performance)
-- `microsoft/DialoGPT-medium`
-- Custom models from HuggingFace Hub
-
+All models are loaded in bfloat16
 ### Layer Selection
 
 Target specific transformer layers for steering vector extraction:
@@ -215,81 +212,6 @@ target_layers = [16]
 # Multiple layers
 target_layers = [10, 15, 20, 25]
 
-# All layers (None, default)
+# All layers - uses context sensitivity to best (most sensitive) select layer
 target_layers = None
-```
-
-### Memory Optimization
-
-For large models, use these strategies:
-- Set smaller batch sizes
-- Use specific target layers instead of all layers
-- Enable gradient checkpointing
-- Use mixed precision (bfloat16)
-
-## Troubleshooting
-
-### Common Issues
-
-1. **CUDA Out of Memory**
-   ```bash
-   # Use fewer layers
-   python core/main_evaluation.py --layers 16 --num-samples 20
-   
-   # Use CPU
-   python core/main_evaluation.py --device cpu
-   ```
-
-2. **HuggingFace Authentication**
-   ```bash
-   # Set token
-   export HUGGINGFACE_HUB_TOKEN=your_token_here
-   
-   # Or create token file
-   mkdir -p ~/.cache/huggingface
-   echo "your_token_here" > ~/.cache/huggingface/token
-   ```
-
-3. **Missing TAT-QA Data**
-   - Download TAT-QA dataset from official source
-   - Place in `data/tatqa_dataset_train.json`
-   - Ensure correct JSON format
-
-### Performance Optimization
-
-- **GPU Memory**: Use `torch.cuda.empty_cache()` and `gc.collect()` between operations
-- **Model Loading**: Share model instances between components
-- **Batch Processing**: Process samples in smaller batches for memory efficiency
-
-## Research Background
-
-This system implements techniques from mechanistic interpretability research:
-
-- **Steering Vectors**: Direction-based control of model outputs
-- **Activation Patching**: Understanding causal model behavior
-- **Representation Analysis**: Probing internal model representations
-- **Calibration**: Ensuring reliable confidence estimates
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Submit a pull request
-
-## License
-
-[Add your license information here]
-
-## Citation
-
-If you use this system in your research, please cite:
-
-```bibtex
-@misc{hallucination-detection-system,
-  title={Mechanistic Interpretability for Hallucination Detection},
-  author={[Your Name]},
-  year={2024},
-  url={[Repository URL]}
-}
 ```
