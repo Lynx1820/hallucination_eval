@@ -82,8 +82,8 @@ python core/main_evaluation.py \
 ```
 1. Load and split TAT-QA data (validation/test)
 2. Extract steering vectors from factual/speculative examples
-3. Calibrate detection threshold on validation data
-4. Analyze hidden states for context sensitivity
+3. Analyze hidden states for context sensitivity
+4. Calibrate detection threshold on validation data
 5. Evaluate hallucination detection on test data
 6. Generate comprehensive performance report
 ```
@@ -212,6 +212,6 @@ target_layers = [16]
 # Multiple layers
 target_layers = [10, 15, 20, 25]
 
-# All layers - uses context sensitivity to best (most sensitive) select layer
+# All layers - uses context sensitivity to select base (most sensitive) layer
 target_layers = None
 ```
